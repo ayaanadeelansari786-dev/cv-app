@@ -1,7 +1,7 @@
 // src/components/Upload.jsx
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { extractTextFromPdf } from '../utils/pdfExtract';
+import { extractTextFromFile } from '../utils/fileExtract';
 import { callAI } from '../utils/api';
 import { addCandidate } from '../hooks/useCandidates';
 import { FileUp, FileText, CheckCircle, AlertCircle } from 'lucide-react';
@@ -16,10 +16,12 @@ export default function Upload() {
     if (!file) return;
     
     setStatus('processing');
-    setMessage('Extracting text from PDF...');
+    setMessage('Reading file...');
 
     try {
-      const text = await extractTextFromPdf(file);
+      const text = await extractTextFromFile(file, (progressMessage) => {
+        setMessage(progressMessage);
+      });
       
       setMessage('AI is parsing candidate data...');
       const messages = [
@@ -57,7 +59,14 @@ export default function Upload() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/webp': ['.webp'],
+      'text/plain': ['.txt']
+    },
     multiple: false,
     disabled: status === 'processing'
   });
@@ -84,7 +93,10 @@ export default function Upload() {
               <FileUp className="upload-icon" />
               <h2>Upload Candidate CV</h2>
               <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>
-                Drag & drop a PDF here, or click to browse files
+                Drag & drop your resume here, or click to browse files
+              </p>
+              <p style={{ marginTop: '0.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                Supports PDF, DOCX, PNG, JPG, WebP, and TXT
               </p>
             </motion.div>
           )}

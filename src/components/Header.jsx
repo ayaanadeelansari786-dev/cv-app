@@ -1,8 +1,9 @@
 // src/components/Header.jsx
 import React from 'react';
-import { UploadCloud, Users, MessageSquare, BarChart2 } from 'lucide-react';
+import { Sparkles, UploadCloud, Users, MessageSquare, BarChart2 } from 'lucide-react';
 
 const tabs = [
+  { id: 'Welcome', icon: Sparkles },
   { id: 'Upload', icon: UploadCloud },
   { id: 'Candidates', icon: Users },
   { id: 'Chat', icon: MessageSquare },
